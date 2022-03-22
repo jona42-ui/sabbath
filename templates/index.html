@@ -1,21 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>isitsabbathtoday</title>
-    <style>
-        body{
-            text-align:center;
-        }
-    </style>
-</head>
-<body>
-    {% if sabbath_time %}
-    <h1>Yes! its God's Day of rest,HAPPY SABBATH</h1>
-    {% else %}
-    <h1>No!,Its a Working Day</h1>
-    {% endif %}
-</body>
-</html>
+{% extends "layout.html" %}
+{% block body %}
+ 
+<div id="main">
+<div id="countdown">
+{{Candletime}}
+</div>
+
+<div id="countdown">
+You have <span id="day"> </span> days, <span id="hour"></span> hours, <span id="minute"></span> minutes, and <span id="second"> </span> seconds until Shabbos.
+</div>
+</div>
+
+
+<script>
+ 
+var deadline = new Date("{{countdown}}").getTime();
+ 
+var x = setInterval(function() {
+ 
+var now = new Date().getTime();
+var t = deadline - now;
+var days = Math.floor(t / (1000 * 60 * 60 * 24));
+var hours = Math.floor((t%(1000 * 60 * 60 * 24))/(1000 * 60 * 60));
+var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+var seconds = Math.floor((t % (1000 * 60)) / 1000);
+document.getElementById("day").innerHTML =days ;
+document.getElementById("hour").innerHTML =hours;
+document.getElementById("minute").innerHTML = minutes; 
+document.getElementById("second").innerHTML =seconds; 
+if (t < 0) {
+        clearInterval(x);
+        document.getElementById("demo").innerHTML = "TIME UP";
+        document.getElementById("day").innerHTML ='0';
+        document.getElementById("hour").innerHTML ='0';
+        document.getElementById("minute").innerHTML ='0' ; 
+        document.getElementById("second").innerHTML = '0'; }
+}, 1000);
+</script>
+
+{% endblock %}
