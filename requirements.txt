@@ -15,7 +15,7 @@ iso3166==0.8
 itsdangerous==0.24
 Jinja2==2.10
 lxml==4.1.1
-MarkupSafe==1.0
+MarkupSafe==1.1.1
 pycryptodome==3.4.7
 PySocks==1.6.8
 requests==2.18.4
