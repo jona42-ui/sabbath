@@ -1,5 +1,5 @@
 from grabIP import IPadd
-key1 = "AIzaSyAMrFVsqH7M0lB-1K9Sf1x3E8yoN3VFIwg"
+key1 = "AIzaSyDHtuC_1DDa3COv-Y_KlIB2wlPFwv0JfPI"
 
 
 # def IPadd():
@@ -23,7 +23,7 @@ def local_time():
 	Location_info = json.loads(loc_request_json_data)
 	longi = str(Location_info['lon'])
 	latit = str(Location_info['lat'])
-	key1 = "AIzaSyAMrFVsqH7M0lB-1K9Sf1x3E8yoN3VFIwg"
+	key1 = "AIzaSyDHtuC_1DDa3COv-Y_KlIB2wlPFwv0JfPI"
 	fromepoch = str(int(time.time()))
 	loc_request=requests.get("https://maps.googleapis.com/maps/api/timezone/json?location=" + latit + ","+ longi +"&timestamp=" + fromepoch+"&key=" + key1)
 	type(loc_request)

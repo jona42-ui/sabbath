@@ -1,3 +1,4 @@
+import string
 from grabIP import IPadd
 
 def get_data():
@@ -25,13 +26,13 @@ def get_data():
 	#link is for master heb cal calendar api
 	heb_cal_address='http://www.hebcal.com/hebcal/?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year='+current_year+'&month=x&ss=on&mf=on&c=on&geo=pos&latitude=['+latit+']&longitude=['+longi+']&tzid=['+region+']&m=50&s=off'
 
-	#begin main loop
+
 
 
 	import time, requests, datetime, json
 	res = requests.get(heb_cal_address)
-	ready = json.loads(res.text)
-	data = ready.get('items')
+	data = json.loads(res.text)
+	#data = ready.get('items')
 	return data, city
 	#beginning of main while loop that should hold until candles followed by havdala
 
