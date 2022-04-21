@@ -31,8 +31,9 @@ def get_data():
 
 	import time, requests, datetime, json
 	res = requests.get(heb_cal_address)
-	data = json.loads(res.text)
-	#data = ready.get('items')
+	# transform from none type to integer.
+	ready =int(json.loads(res.text)) 
+	data = ready.get('items')
 	return data, city
 	#beginning of main while loop that should hold until candles followed by havdala
 
