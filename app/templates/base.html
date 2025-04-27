@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sabbath Companion{% endblock %}</title>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <!-- Navigation -->
+    <nav x-data="{ open: false }" class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-primary-600 font-bold text-xl">
+                            Sabbath Companion
+                        </a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">
+                            Dashboard
+                        </a>
+                        <a href="/sabbath" class="nav-link {% if request.endpoint == 'main.sabbath' %}active{% endif %}">
+                            Sabbath Times
+                        </a>
+                        <a href="/spiritual" class="nav-link {% if request.endpoint == 'main.spiritual' %}active{% endif %}">
+                            Spiritual Growth
+                        </a>
+                        <a href="/prayer" class="nav-link {% if request.endpoint == 'main.prayer' %}active{% endif %}">
+                            Prayer Journal
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                    {% if current_user.is_authenticated %}
+                        <div class="ml-3 relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="flex text-sm rounded-full focus:outline-none">
+                                <span class="sr-only">Open user menu</span>
+                                <div class="h-8 w-8 rounded-full bg-primary-600 text-white flex items-center justify-center">
+                                    {{ current_user.username[0].upper() }}
+                                </div>
+                            </button>
+                            <div x-show="open" @click.away="open = false" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5">
+                                <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                                <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                                <form action="/auth/logout" method="post" class="block">
+                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="flex space-x-4">
+                            <a href="/auth/login" class="btn-secondary">Login</a>
+                            <a href="/auth/register" class="btn-primary">Register</a>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="flex items-center sm:hidden">
+                    <button @click="open = !open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                        <span class="sr-only">Open main menu</span>
+                        <svg x-show="!open" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg x-show="open" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div x-show="open" class="sm:hidden">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="/" class="mobile-nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">Dashboard</a>
+                <a href="/sabbath" class="mobile-nav-link {% if request.endpoint == 'main.sabbath' %}active{% endif %}">Sabbath Times</a>
+                <a href="/spiritual" class="mobile-nav-link {% if request.endpoint == 'main.spiritual' %}active{% endif %}">Spiritual Growth</a>
+                <a href="/prayer" class="mobile-nav-link {% if request.endpoint == 'main.prayer' %}active{% endif %}">Prayer Journal</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div x-data="{ show: true }" x-show="show" class="rounded-md p-4 mb-4 {% if category == 'error' %}bg-red-50 text-red-800{% else %}bg-green-50 text-green-800{% endif %}">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                {% if category == 'error' %}
+                                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                    </svg>
+                                {% else %}
+                                    <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm">{{ message }}</p>
+                            </div>
+                            <div class="ml-auto pl-3">
+                                <div class="-mx-1.5 -my-1.5">
+                                    <button @click="show = false" class="inline-flex rounded-md p-1.5 {% if category == 'error' %}text-red-500 hover:bg-red-100{% else %}text-green-500 hover:bg-green-100{% endif %} focus:outline-none">
+                                        <span class="sr-only">Dismiss</span>
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-12">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="mt-8 border-t border-gray-200 pt-8 md:flex md:items-center md:justify-between">
+                <div class="flex space-x-6 md:order-2">
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">About</span>
+                        About
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">Privacy</span>
+                        Privacy
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">Terms</span>
+                        Terms
+                    </a>
+                </div>
+                <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+                    &copy; 2025 Sabbath Companion. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .nav-link {
+            @apply inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-150;
+            @apply text-gray-500 border-transparent hover:border-gray-300 hover:text-gray-700;
+        }
+        .nav-link.active {
+            @apply border-primary-500 text-gray-900;
+        }
+        .mobile-nav-link {
+            @apply block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150;
+            @apply text-gray-500 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700;
+        }
+        .mobile-nav-link.active {
+            @apply bg-primary-50 border-primary-500 text-primary-700;
+        }
+        .btn-primary {
+            @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm;
+            @apply text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+        }
+        .btn-secondary {
+            @apply inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md;
+            @apply text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+        }
+        .form-input {
+            @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm;
+            @apply focus:border-primary-500 focus:ring-primary-500 sm:text-sm;
+        }
+        .form-label {
+            @apply block text-sm font-medium text-gray-700;
+        }
+        .form-error {
+            @apply mt-2 text-sm text-red-600;
+        }
+    </style>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

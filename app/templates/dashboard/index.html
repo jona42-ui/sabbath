@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sabbath Companion{% endblock %}
+
+{% block content %}
+<div class="py-6">
+    <!-- Welcome Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-2xl font-semibold text-gray-900">Welcome, {{ current_user.username }}</h1>
+        <p class="mt-1 text-sm text-gray-500">
+            Here's your spiritual journey overview
+        </p>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Stats Grid -->
+        <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <!-- Sabbath Countdown -->
+            <div class="bg-white overflow-hidden shadow rounded-lg"
+                 x-data="sabbathCountdown()"
+                 x-init="startCountdown()">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Next Sabbath
+                                </dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900" x-text="countdown"></div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <div class="text-sm">
+                        <a href="{{ url_for('main.sabbath') }}" class="font-medium text-primary-600 hover:text-primary-500">
+                            View details
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spiritual Growth -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Spiritual Growth
+                                </dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900">
+                                        {{ stats.spiritual_level }}
+                                    </div>
+                                    <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                                        <svg class="self-center flex-shrink-0 h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="sr-only">Increased by</span>
+                                        {{ stats.growth_rate }}%
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <div class="text-sm">
+                        <a href="{{ url_for('main.spiritual') }}" class="font-medium text-primary-600 hover:text-primary-500">
+                            View details
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prayer Requests -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Active Prayer Requests
+                                </dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900">
+                                        {{ stats.active_prayers }}
+                                    </div>
+                                    <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                                        <span class="text-gray-500">
+                                            {{ stats.answered_prayers }} answered
+                                        </span>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <div class="text-sm">
+                        <a href="{{ url_for('main.prayer') }}" class="font-medium text-primary-600 hover:text-primary-500">
+                            View details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="mt-8">
+            <div class="align-middle inline-block min-w-full border-b border-gray-200">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    Recent Activity
+                </h3>
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="border-t border-gray-200">
+                            <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Type
+                            </th>
+                            <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Description
+                            </th>
+                            <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Date
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for activity in activities %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ activity.type }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500">
+                                {{ activity.description }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ activity.date.strftime('%Y-%m-%d %H:%M') }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function sabbathCountdown() {
+    return {
+        countdown: '',
+        startCountdown() {
+            const updateCountdown = () => {
+                const now = new Date();
+                const friday = new Date();
+                friday.setDate(friday.getDate() + ((5 + 7 - friday.getDay()) % 7));
+                friday.setHours(18, 0, 0, 0);
+
+                const diff = friday - now;
+                if (diff < 0) {
+                    friday.setDate(friday.getDate() + 7);
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                this.countdown = `${days}d ${hours}h ${minutes}m`;
+            };
+
+            updateCountdown();
+            setInterval(updateCountdown, 60000);
+        }
+    }
+}
+</script>
+{% endblock %}

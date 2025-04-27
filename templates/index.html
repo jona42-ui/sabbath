@@ -1,41 +1,103 @@
 {% extends "layout.html" %}
 {% block body %}
  
-<div id="main">
-<div id="countdown">
-{{Candletime}}
-</div>
+<div class="main-content">
+    <div class="sabbath-status">
+        <h1>{{ sabbath_info.status }}</h1>
+        <p class="time-info">{{ sabbath_info.time_info }}</p>
+        <p class="location">in {{ sabbath_info.location }}</p>
+    </div>
 
-<div id="countdown">
-You have <span id="day"> </span> days, <span id="hour"></span> hours, <span id="minute"></span> minutes, and <span id="second"> </span> seconds until Shabbos.
-</div>
-</div>
+    <div class="sabbath-resources">
+        <h2>Understanding the Sabbath</h2>
+        <div class="resource-grid">
+            <div class="resource-card">
+                <h3>Rest & Renewal</h3>
+                <p>The Sabbath is God's gift of rest - a time to recharge physically, mentally, and spiritually.</p>
+                <p class="bible-verse">"Remember the Sabbath day, to keep it holy." - Exodus 20:8</p>
+            </div>
+            <div class="resource-card">
+                <h3>Family & Worship</h3>
+                <p>Spend quality time with family and in worship, strengthening relationships with God and loved ones.</p>
+                <p class="bible-verse">"Call the Sabbath a delight." - Isaiah 58:13</p>
+            </div>
+            <div class="resource-card">
+                <h3>Service & Community</h3>
+                <p>Use this sacred time for acts of kindness and building community connections.</p>
+                <p class="bible-verse">"It is lawful to do good on the Sabbath." - Matthew 12:12</p>
+            </div>
+        </div>
+    </div>
 
+    <div class="chatbot-section">
+        <h2>Ask about the Sabbath</h2>
+        <div class="chat-container">
+            <div id="chat-messages"></div>
+            <div class="chat-input">
+                <input type="text" id="user-message" placeholder="Ask a question about the Sabbath or work principles...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
- 
-var deadline = new Date("{{countdown}}").getTime();
- 
-var x = setInterval(function() {
- 
-var now = new Date().getTime();
-var t = deadline - now;
-var days = Math.floor(t / (1000 * 60 * 60 * 24));
-var hours = Math.floor((t%(1000 * 60 * 60 * 24))/(1000 * 60 * 60));
-var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
-var seconds = Math.floor((t % (1000 * 60)) / 1000);
-document.getElementById("day").innerHTML =days ;
-document.getElementById("hour").innerHTML =hours;
-document.getElementById("minute").innerHTML = minutes; 
-document.getElementById("second").innerHTML =seconds; 
-if (t < 0) {
-        clearInterval(x);
-        document.getElementById("demo").innerHTML = "TIME UP";
-        document.getElementById("day").innerHTML ='0';
-        document.getElementById("hour").innerHTML ='0';
-        document.getElementById("minute").innerHTML ='0' ; 
-        document.getElementById("second").innerHTML = '0'; }
-}, 1000);
-</script>
+async function sendMessage() {
+    const input = document.getElementById('user-message');
+    const message = input.value.trim();
+    if (!message) return;
 
+    // Clear input
+    input.value = '';
+
+    // Add user message to chat
+    addMessageToChat('user', message);
+
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: message }),
+        });
+
+        const data = await response.json();
+        
+        // Add bot response to chat
+        addMessageToChat('bot', data.answer);
+        
+        // Add verses if any
+        if (data.verses && data.verses.length > 0) {
+            const verses = data.verses.map(verse => `${verse[0]}: ${verse[1]}`).join('\n');
+            addMessageToChat('verses', verses);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        addMessageToChat('error', 'Sorry, there was an error processing your question.');
+    }
+}
+
+function addMessageToChat(type, content) {
+    const messages = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${type}`;
+    
+    if (type === 'verses') {
+        messageDiv.innerHTML = '<strong>Biblical References:</strong><br>' + content.replace(/\n/g, '<br>');
+    } else {
+        messageDiv.textContent = content;
+    }
+    
+    messages.appendChild(messageDiv);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+// Allow Enter key to send message
+document.getElementById('user-message').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+</script>
 {% endblock %}

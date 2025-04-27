@@ -1,26 +1,27 @@
-
-from symtable import SymbolTable
-from xml.dom import NO_MODIFICATION_ALLOWED_ERR
-from flask import Flask, flash, redirect, render_template, request, session, abort
-from random import randint
+from flask import Flask, render_template, request, jsonify
 import shabbos_web_class
-import googleapi
+from ai_chat import SabbathAI
 
 app = Flask(__name__)
- 
+chatbot = SabbathAI()
+
 @app.route("/")
 @app.route("/home")
 def index():
-    #return name
-    
-
-    Candletime = shabbos_web_class.return_candletime_string()
-    countdown = shabbos_web_class.time_remaining()
-   
-
-
+    sabbath_info = shabbos_web_class.get_sabbath_info()
     return render_template(
-        'index.html',**locals())
- 
+        'index.html',
+        sabbath_info=sabbath_info
+    )
+
+@app.route("/api/chat", methods=['POST'])
+def chat():
+    data = request.get_json()
+    if not data or 'message' not in data:
+        return jsonify({'error': 'No message provided'}), 400
+    
+    response = chatbot.get_response(data['message'])
+    return jsonify(response)
+
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

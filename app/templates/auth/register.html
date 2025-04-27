@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Sabbath Companion{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Create your account
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}" class="font-medium text-primary-600 hover:text-primary-500">
+                Sign in
+            </a>
+        </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <form class="space-y-6" action="{{ url_for('auth.register') }}" method="POST" 
+                  x-data="{ loading: false, password: '', confirmPassword: '', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone }" 
+                  @submit.prevent="if (password === confirmPassword) { loading = true; $el.submit(); }">
+                <div>
+                    <label for="username" class="form-label">Username</label>
+                    <div class="mt-1">
+                        <input id="username" name="username" type="text" required 
+                               class="form-input" autocomplete="username">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="form-label">Email address</label>
+                    <div class="mt-1">
+                        <input id="email" name="email" type="email" required 
+                               class="form-input" autocomplete="email">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password" class="form-label">Password</label>
+                    <div class="mt-1">
+                        <input id="password" name="password" type="password" required 
+                               x-model="password" @input="$refs.passwordStrength.value = checkPasswordStrength($el.value)"
+                               class="form-input" autocomplete="new-password">
+                    </div>
+                    <meter x-ref="passwordStrength" class="w-full h-2 mt-2" min="0" max="4" low="2" high="3" optimum="4"></meter>
+                    <p class="mt-1 text-xs text-gray-500">Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.</p>
+                </div>
+
+                <div>
+                    <label for="confirm_password" class="form-label">Confirm password</label>
+                    <div class="mt-1">
+                        <input id="confirm_password" type="password" required 
+                               x-model="confirmPassword"
+                               class="form-input" autocomplete="new-password">
+                    </div>
+                    <p x-show="password && password !== confirmPassword" 
+                       class="mt-2 text-sm text-red-600">
+                        Passwords do not match
+                    </p>
+                </div>
+
+                <input type="hidden" name="timezone" x-model="timezone">
+
+                <div class="space-y-4">
+                    <div class="relative flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="terms" name="terms" type="checkbox" required
+                                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="terms" class="font-medium text-gray-700">
+                                I agree to the 
+                                <a href="#" class="text-primary-600 hover:text-primary-500">
+                                    Terms of Service
+                                </a>
+                                and
+                                <a href="#" class="text-primary-600 hover:text-primary-500">
+                                    Privacy Policy
+                                </a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="w-full btn-primary" 
+                            :disabled="loading || password !== confirmPassword">
+                        <span x-show="!loading">Create Account</span>
+                        <span x-show="loading" class="flex items-center justify-center">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Creating account...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]/)) strength++;
+        if (password.match(/[A-Z]/)) strength++;
+        if (password.match(/[0-9]/)) strength++;
+        if (password.match(/[^a-zA-Z0-9]/)) strength++;
+        return strength;
+    }
+</script>
+{% endblock %}
+{% endblock %}

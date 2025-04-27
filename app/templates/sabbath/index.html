@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Sabbath Times - Sabbath Companion{% endblock %}
+
+{% block content %}
+<div class="py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-2xl font-semibold text-gray-900">Sabbath Times</h1>
+        <p class="mt-1 text-sm text-gray-500">
+            Plan and prepare for the upcoming Sabbath
+        </p>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <!-- Sabbath Times Card -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8"
+             x-data="sabbathTimes()"
+             x-init="loadTimes()">
+            <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Next Sabbath Times
+                    </h3>
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500" x-text="formattedDate">
+                    </p>
+                </div>
+                <button @click="loadTimes()" class="btn-secondary">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                </button>
+            </div>
+            <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500">Candle Lighting</h4>
+                        <p class="mt-1 text-lg text-gray-900" x-text="times.candle_lighting || 'Loading...'"></p>
+                        <div class="mt-1" x-show="countdown.candle">
+                            <span class="text-sm text-primary-600" x-text="countdown.candle"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500">Havdalah</h4>
+                        <p class="mt-1 text-lg text-gray-900" x-text="times.havdalah || 'Loading...'"></p>
+                        <div class="mt-1" x-show="countdown.havdalah">
+                            <span class="text-sm text-primary-600" x-text="countdown.havdalah"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preparation Checklist -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg"
+             x-data="preparationChecklist()"
+             x-init="loadChecklist()">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Preparation Checklist
+                </h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    Tasks to complete before Sabbath
+                </p>
+            </div>
+            <div class="border-t border-gray-200">
+                <template x-for="(category, index) in Object.keys(checklist)" :key="index">
+                    <div>
+                        <div class="px-4 py-5 sm:px-6">
+                            <h4 class="text-base font-medium text-gray-900 capitalize" x-text="category"></h4>
+                            <div class="mt-4 space-y-4">
+                                <template x-for="(task, taskIndex) in checklist[category]" :key="taskIndex">
+                                    <div class="flex items-start">
+                                        <div class="flex items-center h-5">
+                                            <input :id="'task-'+category+'-'+taskIndex"
+                                                   type="checkbox"
+                                                   :checked="task.completed"
+                                                   @change="toggleTask(category, taskIndex)"
+                                                   class="focus:ring-primary-500 h-4 w-4 text-primary-600 border-gray-300 rounded">
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <label :for="'task-'+category+'-'+taskIndex" 
+                                                   class="font-medium text-gray-700"
+                                                   :class="{'line-through text-gray-400': task.completed}"
+                                                   x-text="task.text">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-200" x-show="index < Object.keys(checklist).length - 1"></div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function sabbathTimes() {
+    return {
+        times: {},
+        countdown: {
+            candle: '',
+            havdalah: ''
+        },
+        formattedDate: '',
+        async loadTimes() {
+            try {
+                const response = await fetch('/api/v1/sabbath/times');
+                const data = await response.json();
+                this.times = data;
+                this.formattedDate = new Date(data.start).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                this.startCountdown();
+            } catch (error) {
+                console.error('Error loading Sabbath times:', error);
+            }
+        },
+        startCountdown() {
+            const updateCountdown = () => {
+                const now = new Date();
+                const candleTime = new Date(this.times.candle_lighting);
+                const havdalahTime = new Date(this.times.havdalah);
+
+                if (now < candleTime) {
+                    const diff = candleTime - now;
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    this.countdown.candle = `Begins in ${hours}h ${minutes}m`;
+                    this.countdown.havdalah = '';
+                } else if (now < havdalahTime) {
+                    const diff = havdalahTime - now;
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    this.countdown.candle = 'Sabbath in progress';
+                    this.countdown.havdalah = `Ends in ${hours}h ${minutes}m`;
+                } else {
+                    this.countdown.candle = 'Completed';
+                    this.countdown.havdalah = 'Completed';
+                }
+            };
+
+            updateCountdown();
+            setInterval(updateCountdown, 60000);
+        }
+    }
+}
+
+function preparationChecklist() {
+    return {
+        checklist: {},
+        async loadChecklist() {
+            try {
+                const response = await fetch('/api/v1/sabbath/preparation-checklist');
+                const data = await response.json();
+                this.checklist = Object.keys(data).reduce((acc, category) => {
+                    acc[category] = data[category].map(text => ({
+                        text,
+                        completed: false
+                    }));
+                    return acc;
+                }, {});
+            } catch (error) {
+                console.error('Error loading checklist:', error);
+            }
+        },
+        toggleTask(category, index) {
+            this.checklist[category][index].completed = !this.checklist[category][index].completed;
+            this.saveProgress();
+        },
+        async saveProgress() {
+            try {
+                await fetch('/api/v1/sabbath/preparation-progress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(this.checklist)
+                });
+            } catch (error) {
+                console.error('Error saving progress:', error);
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

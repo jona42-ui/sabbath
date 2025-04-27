@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Spiritual Growth - Sabbath Companion{% endblock %}
+
+{% block content %}
+<div class="py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-2xl font-semibold text-gray-900">Spiritual Growth Tracker</h1>
+        <p class="mt-1 text-sm text-gray-500">
+            Track your spiritual journey and set growth goals
+        </p>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <!-- Growth Categories -->
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- Bible Study -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Bible Study</dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">
+                                        {{ stats.bible_study.total_minutes }} minutes
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        Last 7 days
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="relative pt-1">
+                            <div class="flex mb-2 items-center justify-between">
+                                <div class="text-xs font-semibold text-primary-600">
+                                    Progress to goal
+                                </div>
+                                <div class="text-xs font-semibold text-primary-600">
+                                    {{ stats.bible_study.progress }}%
+                                </div>
+                            </div>
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-primary-200">
+                                <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary-500"
+                                     style="--progress: {{ stats.bible_study.progress }}%; width: var(--progress)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+                        Record study time
+                    </a>
+                </div>
+            </div>
+
+            <!-- Prayer Life -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Prayer Life</dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">
+                                        {{ stats.prayer.total_prayers }} prayers
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ stats.prayer.answered_prayers }} answered
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="relative pt-1">
+                            <div class="flex mb-2 items-center justify-between">
+                                <div class="text-xs font-semibold text-primary-600">
+                                    Daily goal progress
+                                </div>
+                                <div class="text-xs font-semibold text-primary-600">
+                                    {{ stats.prayer.progress }}%
+                                </div>
+                            </div>
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-primary-200">
+                                <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary-500"
+                                     style="--progress: {{ stats.prayer.progress }}%; width: var(--progress)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+                        Add prayer request
+                    </a>
+                </div>
+            </div>
+
+            <!-- Service -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Service</dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">
+                                        {{ stats.service.total_hours }} hours
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        This month
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="relative pt-1">
+                            <div class="flex mb-2 items-center justify-between">
+                                <div class="text-xs font-semibold text-primary-600">
+                                    Monthly goal progress
+                                </div>
+                                <div class="text-xs font-semibold text-primary-600">
+                                    {{ stats.service.progress }}%
+                                </div>
+                            </div>
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-primary-200">
+                                <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary-500"
+                                     style="--progress: {{ stats.service.progress }}%; width: var(--progress)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+                        Log service activity
+                    </a>
+                </div>
+            </div>
+
+            <!-- Health -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Health</dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">
+                                        {{ stats.health.score }}/10
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        Overall wellness
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="relative pt-1">
+                            <div class="flex mb-2 items-center justify-between">
+                                <div class="text-xs font-semibold text-primary-600">
+                                    Health principles followed
+                                </div>
+                                <div class="text-xs font-semibold text-primary-600">
+                                    {{ stats.health.progress }}%
+                                </div>
+                            </div>
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-primary-200">
+                                <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary-500"
+                                     style="--progress: {{ stats.health.progress }}%; width: var(--progress)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+                        Update health log
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Growth Insights -->
+        <div class="mt-8">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                Growth Insights
+            </h3>
+            <div class="bg-white shadow overflow-hidden sm:rounded-md">
+                <ul role="list" class="divide-y divide-gray-200">
+                    {% for insight in insights %}
+                    <li>
+                        <div class="px-4 py-4 sm:px-6">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium text-primary-600 truncate">
+                                    {{ insight.title }}
+                                </p>
+                                <div class="ml-2 flex-shrink-0 flex">
+                                    <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                              {% if insight.category == 'challenge' %}bg-yellow-100 text-yellow-800
+                                              {% else %}bg-green-100 text-green-800{% endif %}">
+                                        {{ insight.category }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mt-2 sm:flex sm:justify-between">
+                                <div class="sm:flex">
+                                    <p class="text-sm text-gray-500">
+                                        {{ insight.description }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
